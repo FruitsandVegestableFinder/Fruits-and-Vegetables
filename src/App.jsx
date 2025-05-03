@@ -52,15 +52,11 @@ function App() {
   return (
     <Router>
         {isLoaded ?
-          <>
-            {active === 'active' ? 
-              <div className='min-h-screen flex items-stretch flex-col overflow-hidden bg-cover bg-fixed' style={{ backgroundImage: `url(${img})` }}>
-                <Navbar />
-                <Sidebar />
-              </div>
-              <div>Unpaid</div>
-            }
-          </>
+            <div className='min-h-screen flex items-stretch flex-col overflow-hidden bg-cover bg-fixed' style={{ backgroundImage: `url(${img})` }}>
+              <Navbar />
+              <Sidebar />
+              {active != 'active' && <div className='w-screen h-screen absolute top-0 left-0 z-[999] flex justify-center item-center'><div className='text-xl font-bold'>UNPAID</div></div>}
+            </div>
           :
           <LoadingProgress/>
         }

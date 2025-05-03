@@ -64,7 +64,7 @@ const Register = () => {
                 value={contactNumber}
                 onChange={(e) => {
                   setRegisterError();
-                  setContactNumber(e.target.value);
+                  setContactNumber(e.target.value.replace(/[^0-9+]/g, '').slice(0, 11));
                 }}
                 required
               />

@@ -12,6 +12,7 @@ import usePathStore from '../../store/usePathStore';
 
 function Supplies() {
     const { supplies, getAllSupplies, editSupplies, addSupplies, deleteSupplies, createNotification } = useSuppliesStore();
+    const [isDisabled, setIsDisabled] = useState(false);
     const { setPathFromWindow } = usePathStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [err, setErr] = useState(null);
@@ -135,8 +136,26 @@ function Supplies() {
     // sumbit
     const handleSubmit = async () => {
         let userId = userInfo?.id;
+        setIsDisabled(true);
         if(details?.action == 'Edit'){
-            editSupplies(userId, details?.type, details?.name, details?.id, details?.imgUrl, image);
+            const data = await editSupplies(userId, details?.type, details?.name, details?.id, details?.imgUrl, image);
+            if(data?.err){
+                setErr(data?.err);
+                setIsDisabled(false);
+                return;
+            } else {
+                if(data?.success){
+                    setSuccess(data?.success);
+                    setIsDisabled(false);
+                    createNotification(data?.supplyName);
+                    setTimeout(() => {
+                        setSuccess(null);
+                    }, 2500)
+                }
+                document.getElementById('supplies_modal').close();
+                setIsLoaded(false);
+            }
+            
             addAudit(`Updated a supply details.`, userId);
             setImage(null);
             setPreview(null);
@@ -145,11 +164,13 @@ function Supplies() {
         } else {
             const data = await addSupplies(userId, details?.type, details?.name, image);
             if(data?.err){
-                setErr(data?.err)
+                setErr(data?.err);
+                setIsDisabled(false);
                 return;
             } else {
                 if(data?.success){
                     setSuccess(data?.success);
+                    setIsDisabled(false);
                     createNotification(data?.supplyName);
                     setTimeout(() => {
                         setSuccess(null);
@@ -225,7 +246,7 @@ function Supplies() {
                     </div>
                 </div>
                     
-                <SuppliesModal userInfo={userInfo} details={details} setDetails={setDetails} handleSubmit={handleSubmit} image ={image} handleImageChange={handleImageChange} preview={preview} err={err} setErr={setErr}/>
+                <SuppliesModal userInfo={userInfo} details={details} setDetails={setDetails} handleSubmit={handleSubmit} image={image} handleImageChange={handleImageChange} preview={preview} err={err} setErr={setErr} isDisabled={isDisabled}/>
             </div>
             {success && 
                 <div className="toast z-[999]">

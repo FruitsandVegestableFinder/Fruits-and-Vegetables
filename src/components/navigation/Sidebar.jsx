@@ -27,7 +27,7 @@ function Sidebar() {
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
-                {active == 'active' 
+                {active == 'active' ? 
                     <AppRoutes/>
                     :
                     <div>Unpaid<div/>

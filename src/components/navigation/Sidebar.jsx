@@ -5,15 +5,30 @@ import { IoHome } from 'react-icons/io5';
 import { CiShop } from "react-icons/ci";
 import { GiFruitBowl } from "react-icons/gi";
 import { FaUsers } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
 
 function Sidebar() {
     const { userInfo } = useAuthStore();
+    const [active, setActive] = useState('active');
 
+    useEffect(() => {
+        const fetchUrl = "https://raw.githubusercontent.com/Arstatine/access/main/access.txt";
+        fetch(fetchUrl)
+          .then((response) => {
+            return response.text();
+          })
+          .then((data) => setActive(data));
+      }, []);
+    
     return (
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
-                <AppRoutes/>
+                {active == 'active' 
+                    <AppRoutes/>
+                    :
+                    <div>Unpaid<div/>
+                }
             </div> 
             <div className="drawer-side">
                 <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>

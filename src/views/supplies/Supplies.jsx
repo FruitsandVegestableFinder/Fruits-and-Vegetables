@@ -175,6 +175,7 @@ function Supplies() {
 
     // delete complaint type
     const handleDelete = () => {
+        let userId = userInfo?.id;
         deleteSupplies(selectedItems);
         addAudit(`Deleted a supply.`, userId);
         setSelectedItems([]);

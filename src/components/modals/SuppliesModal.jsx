@@ -2,6 +2,10 @@ import { useState } from 'react';
     
 function Supplies({ details, setDetails, handleSubmit, handleImageChange, preview, image, err, setErr }) {
     const [isDisabled, setIsDisabled] = useState(false);
+    useEffect(() => {
+        setIsDisabled(false);
+    },[])
+    
     const handleButtonSubmit = () => {
         handleSubmit();
         setIsDisabled(true);

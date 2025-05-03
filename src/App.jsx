@@ -43,8 +43,7 @@ function App() {
                 const response = await fetch("https://raw.githubusercontent.com/Arstatine/access/main/access.txt");
                 const text = await response.text();
                 setActive(text);
-                console.log(text)
-            } catch (err) { console.log(err) }
+            } catch (err) {  }
         };
     
         fetchAccessText();
@@ -53,10 +52,16 @@ function App() {
   return (
     <Router>
         {isLoaded ?
-          <div className='min-h-screen flex items-stretch flex-col overflow-hidden bg-cover bg-fixed' style={{ backgroundImage: `url(${img})` }}>
-            <Navbar />
-            <Sidebar />
-          </div>
+          <>
+            {active === 'active' ? 
+              <div className='min-h-screen flex items-stretch flex-col overflow-hidden bg-cover bg-fixed' style={{ backgroundImage: `url(${img})` }}>
+                <Navbar />
+                <Sidebar />
+              </div>
+              :
+              <div>Unpaid<div/>
+            }
+          </>
           :
           <LoadingProgress/>
         }

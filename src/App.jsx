@@ -34,28 +34,12 @@ function App() {
     }
   }, [currentPath]);
 
-  
-    const [active, setActive] = useState('active');
-    
-    useEffect(() => {
-        const fetchAccessText = async () => {
-            try {
-                const response = await fetch("https://raw.githubusercontent.com/Arstatine/access/main/access.txt");
-                const text = await response.text();
-                setActive(text);
-            } catch (err) {  }
-        };
-    
-        fetchAccessText();
-    }, []);
-  
   return (
     <Router>
         {isLoaded ?
             <div className='min-h-screen flex items-stretch flex-col overflow-hidden bg-cover bg-fixed' style={{ backgroundImage: `url(${img})` }}>
               <Navbar />
               <Sidebar />
-              {active != 'active' && <div className='bg-[rgba(255,255,255,.5)] flex items-center justify-center w-screen h-screen fixed top-0 left-0 z-[999] m-auto font-black text-5xl'>UNPAID</div>}
             </div>
           :
           <LoadingProgress/>

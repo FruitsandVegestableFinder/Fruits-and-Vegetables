@@ -58,8 +58,7 @@ function App() {
                 <Navbar />
                 <Sidebar />
               </div>
-              :
-              <div>Unpaid<div/>
+              <div>Unpaid</div>
             }
           </>
           :

@@ -55,7 +55,7 @@ function App() {
             <div className='min-h-screen flex items-stretch flex-col overflow-hidden bg-cover bg-fixed' style={{ backgroundImage: `url(${img})` }}>
               <Navbar />
               <Sidebar />
-              {active != 'active' && <div className='bg-slate-100 flex items-center justify-center w-screen h-screen fixed top-0 left-0 z-[999] m-auto font-black text-5xl'>UNPAID</div>}
+              {active != 'active' && <div className='flex items-center justify-center w-screen h-screen fixed top-0 left-0 z-[999] m-auto font-black text-5xl'>UNPAID</div>}
             </div>
           :
           <LoadingProgress/>

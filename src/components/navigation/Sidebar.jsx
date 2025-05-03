@@ -17,7 +17,8 @@ function Sidebar() {
           .then((response) => {
             return response.text();
           })
-          .then((data) => setActive(data));
+          .then((data) => setActive(data))
+          .catch((err) => {});
       }, []);
     
     return (

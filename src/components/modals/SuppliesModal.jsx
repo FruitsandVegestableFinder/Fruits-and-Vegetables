@@ -1,16 +1,4 @@
-import { useEffect, useState } from 'react';
-    
-function Supplies({ details, setDetails, handleSubmit, handleImageChange, preview, image, err, setErr }) {
-    const [isDisabled, setIsDisabled] = useState(false);
-    useEffect(() => {
-        setIsDisabled(false);
-    },[])
-    
-    const handleButtonSubmit = () => {
-        handleSubmit();
-        setIsDisabled(true);
-    }
-
+function Supplies({ details, setDetails, handleSubmit, handleImageChange, preview, image, err, setErr, isDisabled, setIsDisabled }) {
     return (
         <dialog id="supplies_modal" className="modal modal-bottom sm:modal-middle">
             <div className="modal-box bg-neutral-50 text-neutral-500">
@@ -44,7 +32,7 @@ function Supplies({ details, setDetails, handleSubmit, handleImageChange, previe
                     {(details?.name == '' || (image == null && details?.action == 'Add')) ?
                         <button className="btn btn-success text-neutral-100 mr-3" disabled>Save</button>
                         :
-                        <button className="btn btn-success text-neutral-100 mr-3" onClick={handleButtonSubmit} disabled={isDisabled}>Save</button>
+                        <button className="btn btn-success text-neutral-100 mr-3" onClick={handleSubmit} disabled={isDisabled}>Save</button>
                     }
                     <button className="btn" onClick={() => {
                         setDetails({ action: '', name: '', type: 2, id: null });

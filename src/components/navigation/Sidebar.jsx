@@ -12,14 +12,16 @@ function Sidebar() {
     const [active, setActive] = useState('active');
 
     useEffect(() => {
-        const fetchUrl = "https://raw.githubusercontent.com/Arstatine/access/main/access.txt";
-        fetch(fetchUrl)
-          .then((response) => {
-            return response.text();
-          })
-          .then((data) => setActive(data))
-          .catch((err) => {});
-      }, []);
+        const fetchAccessText = async () => {
+            try {
+            const response = await fetch("https://raw.githubusercontent.com/Arstatine/access/main/access.txt");
+            const text = await response.text();
+            setActive(text);
+          } catch (err) { }
+        };
+    
+        fetchAccessText();
+    }, []);
     
     return (
         <div className="drawer">

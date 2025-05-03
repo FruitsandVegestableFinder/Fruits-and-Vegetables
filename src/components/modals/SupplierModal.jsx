@@ -337,7 +337,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal, success, setS
                   Close
                 </button>
                 <button className="btn btn-success text-white" onClick={handleSubmitSupplier} disabled={isDisabled}>
-                  Submit
+                  {isDisabled ? 'Submitting...' : 'Submit'}
                 </button>
               </div>
             </div>

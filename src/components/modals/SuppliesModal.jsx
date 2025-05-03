@@ -32,7 +32,7 @@ function Supplies({ details, setDetails, handleSubmit, handleImageChange, previe
                     {(details?.name == '' || (image == null && details?.action == 'Add')) ?
                         <button className="btn btn-success text-neutral-100 mr-3" disabled>Save</button>
                         :
-                        <button className="btn btn-success text-neutral-100 mr-3" onClick={handleSubmit} disabled={isDisabled}>{isDisabled ? 'Saving' : 'Save'}</button>
+                        <button className="btn btn-success text-neutral-100 mr-3" onClick={handleSubmit} disabled={isDisabled}>{isDisabled ? 'Saving...' : 'Save'}</button>
                     }
                     <button className="btn" onClick={() => {
                         setDetails({ action: '', name: '', type: 2, id: null });

@@ -36,7 +36,7 @@ function SupplyLists({ supplies, checkedItems, setCheckedItems }) {
     },[checkedItems])
 
     return (
-        <div className="py-6 px-6 border rounded-xl">
+        <div className="py-6 px-6 border rounded-xl mt-4">
             <h1 className='mb-4 text-center'>Supply Lists</h1>
             <div className="flex items-center mb-4 gap-4">
                 <input

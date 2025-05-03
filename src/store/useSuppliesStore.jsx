@@ -1,7 +1,7 @@
 // useAuthStore.js
 // libraries
 import { create } from 'zustand';
-import { doc, addDoc, collection, serverTimestamp, getDoc, query, updateDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { doc, addDoc, collection, serverTimestamp, getDoc, query, updateDoc, onSnapshot, deleteDoc, getDocs } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '../config';
 import { generateRandomId } from '../lib';
@@ -49,6 +49,18 @@ const useSuppliesStore = create((set) => ({
         }
     },
     addSupplies: async (userId, type, name, img) => {
+        const suppliesSnapshot = await getDocs(collection(db, 'supplies'));
+        const lowerName = name.toLowerCase();
+
+        const isDuplicate = suppliesSnapshot.docs.some(doc => {
+            const data = doc.data();
+            return data.name?.toLowerCase() === lowerName;
+        });
+
+        if (isDuplicate) {
+            return { err: 'Supply is already exist.' };
+        }
+
         let imgUrl = '';
         try {
             const storageRef = ref(storage, `images/${generateRandomId()}`);
@@ -92,6 +104,32 @@ const useSuppliesStore = create((set) => ({
         };
 
         await addDoc(collection(db, 'supplies'), newSupplies);
+        return { success: 'Added successfully.', supplyName: name };
+    },
+    createNotification: async(supplyName) => {
+        const usersCollection = collection(db, 'users');
+        const q = query(usersCollection);
+        const usersSnapshot = await getDocs(q);
+        const usersList = usersSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        const usersOnly = usersList.filter(user => {
+            return user.userType == 2;
+        });
+
+        for (const user of usersOnly) {
+            const notification = {
+              userId: user.id,
+              notification: `New Supply: ${supplyName} added.`,
+              isRead: false,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            };
+          
+            await addDoc(collection(db, 'notifications'), notification);
+        }
     },
     editSupplies: async (userId, type, name, id, prev, img) => {
         let imgUrl = prev;
@@ -141,6 +179,8 @@ const useSuppliesStore = create((set) => ({
 
         const supplyRef = doc(db, "supplies", id);
         await updateDoc(supplyRef, newSupplies);
+
+        return { success: 'Updated successfully.' };
     },
     deleteSupplies: async (suppliesArr) => {
         for (const supply of suppliesArr) {

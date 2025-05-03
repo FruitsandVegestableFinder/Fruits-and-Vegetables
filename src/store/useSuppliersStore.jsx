@@ -152,6 +152,8 @@ const useSuppliersStore = create((set) => ({
     
         await addDoc(collection(db, 'suppliers'), newSupplier);
         set({ supplierSuccess: 'Supplier added successfully.' });
+
+        return { success: 'Added successfully.', supplierName: formData.supplierName, storeName: formData.storeName };
     },
     updateSuppliers: async (formData, image, supplyLists, prevImg, id, imageProfile, prevProfile) => {
       let imgProfile = prevProfile || '';
@@ -257,7 +259,34 @@ const useSuppliersStore = create((set) => ({
 
       const supplieref = doc(db, "suppliers", id);
       await updateDoc(supplieref, newSupplier);
+
+      return { success: 'Updated successfully.' };
     },
+    createNotification: async(supplierName, storeName) => {
+      const usersCollection = collection(db, 'users');
+      const q = query(usersCollection);
+      const usersSnapshot = await getDocs(q);
+      const usersList = usersSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+      }));
+
+      const usersOnly = usersList.filter(user => {
+          return user.userType == 2;
+      });
+
+      for (const user of usersOnly) {
+          const notification = {
+            userId: user.id,
+            notification: `New Supplier: ${supplierName} from ${storeName} added.`,
+            isRead: false,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+        
+          await addDoc(collection(db, 'notifications'), notification);
+      }
+  },
     deleteSuppliers: async (suppliersArr) => {
       for (const supplier of suppliersArr) {
           const supplierRef = doc(db, "suppliers", supplier);

@@ -20,6 +20,7 @@ function Suppliers() {
         setPathFromWindow();
     },[]);
 
+    const [success, setSuccess] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectAllChecked, setSelectAllChecked] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -205,7 +206,14 @@ function Suppliers() {
                     </div>
                 </div>
             </div>
-            <SupplierModal setIsLoaded={setIsLoaded} details={details} isOpen={isOpen} closeModal={closeModal}/>
+            <SupplierModal setIsLoaded={setIsLoaded} details={details} isOpen={isOpen} closeModal={closeModal} success={success} setSuccess={setSuccess}/>
+            {success && 
+                <div className="toast z-[999]">
+                    <div className="alert alert-success text-white">
+                        <span>{success}</span>
+                    </div>
+                </div>
+            }
         </div>
     )
 }

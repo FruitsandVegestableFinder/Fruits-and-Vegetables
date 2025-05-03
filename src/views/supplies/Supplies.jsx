@@ -11,9 +11,11 @@ import useAuditStore from '../../store/useAuditStore';
 import usePathStore from '../../store/usePathStore';
 
 function Supplies() {
-    const { supplies, getAllSupplies, editSupplies, addSupplies, deleteSupplies } = useSuppliesStore();
+    const { supplies, getAllSupplies, editSupplies, addSupplies, deleteSupplies, createNotification } = useSuppliesStore();
     const { setPathFromWindow } = usePathStore();
     const [searchQuery, setSearchQuery] = useState('');
+    const [err, setErr] = useState(null);
+    const [success, setSuccess] = useState(null);
     const [selectAllChecked, setSelectAllChecked] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     
@@ -131,7 +133,7 @@ function Supplies() {
     }
 
     // sumbit
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let userId = userInfo?.id;
         if(details?.action == 'Edit'){
             editSupplies(userId, details?.type, details?.name, details?.id, details?.imgUrl, image);
@@ -141,7 +143,22 @@ function Supplies() {
             const prev = document.getElementById('supply_img');
             prev.value = '';
         } else {
-            addSupplies(userId, details?.type, details?.name, image);
+            const data = await addSupplies(userId, details?.type, details?.name, image);
+            if(data?.err){
+                setErr(data?.err)
+                return;
+            } else {
+                if(data?.success){
+                    setSuccess(data?.success);
+                    createNotification(data?.supplyName);
+                    setTimeout(() => {
+                        setSuccess(null);
+                    }, 2500)
+                }
+                document.getElementById('supplies_modal').close();
+                setIsLoaded(false);
+            }
+
             addAudit(`Updated a supply.`, userId);
             setImage(null);
             setPreview(null);
@@ -154,8 +171,6 @@ function Supplies() {
             name: '',
             id: null
         });
-        document.getElementById('supplies_modal').close();
-        setIsLoaded(false);
     }
 
     // delete complaint type
@@ -209,8 +224,15 @@ function Supplies() {
                     </div>
                 </div>
                     
-                <SuppliesModal userInfo={userInfo} details={details} setDetails={setDetails} handleSubmit={handleSubmit} image ={image} handleImageChange={handleImageChange} preview={preview} />
+                <SuppliesModal userInfo={userInfo} details={details} setDetails={setDetails} handleSubmit={handleSubmit} image ={image} handleImageChange={handleImageChange} preview={preview} err={err} setErr={setErr}/>
             </div>
+            {success && 
+                <div className="toast z-[999]">
+                    <div className="alert alert-success text-white">
+                        <span>{success}</span>
+                    </div>
+                </div>
+            }
         </div>
     )
 }

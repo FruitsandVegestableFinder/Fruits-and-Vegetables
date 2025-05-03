@@ -9,8 +9,9 @@ import useSuppliesStore from '../../store/useSuppliesStore';
 import useAuditStore from '../../store/useAuditStore';
 import { getLocationDetails } from '../../lib';
 
-function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
-  const { updateSuppliers, addSuppliers } = useSuppliersStore();
+function SupplierModal({ setIsLoaded, details, isOpen, closeModal, success, setSuccess }){
+  const [isDisabled, setIsDisabled] = useState(false);
+  const { updateSuppliers, addSuppliers, createNotification } = useSuppliersStore();
   const { userInfo } = useAuthStore();
   const { addAudit } = useAuditStore();
   const { supplies, getAllSupplies } = useSuppliesStore();
@@ -73,7 +74,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
     const { name, value } = e.target;
     setErr(null);
     if(name == 'contactNumber'){
-      const formattedValue = value.replace(/[^0-9+]/g, '');
+      const formattedValue = value.replace(/[^0-9+]/g, '').slice(0, 11);
       setFormData((prev) => ({ ...prev, [name]: formattedValue }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -130,7 +131,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
     setErr(null);
   },[checkedItems]);
 
-  const handleSubmitSupplier = (e) => {
+  const handleSubmitSupplier = async (e) => {
     e.preventDefault();
 
     let hasError = false;
@@ -155,7 +156,15 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
 
     if(details.action == 'Edit'){
       if(hasError) return;
-      updateSuppliers(formData, image, checkedItems, details.imageUrls, details.id, imageProfile, details.imageProfile);
+      setIsDisabled(true);
+      const data = await updateSuppliers(formData, image, checkedItems, details.imageUrls, details.id, imageProfile, details.imageProfile);
+      if(data?.success){
+        setSuccess(data?.success);
+        setTimeout(() => {
+          setSuccess(null);
+          setIsDisabled(false);
+        },2500)
+      }
       addAudit(`Updated a supplier details.`, userInfo?.id);
       setIsLoaded(false);
     } else {
@@ -167,7 +176,16 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
       }
       
       if(hasError) return;
-      addSuppliers(formData, image, imageProfile, checkedItems);
+      setIsDisabled(true);
+      const data = await addSuppliers(formData, image, imageProfile, checkedItems);
+      if(data?.success){
+        setSuccess(data?.success);
+        createNotification(data?.supplierName, data?.storeName);
+        setTimeout(() => {
+          setSuccess(null);
+          setIsDisabled(false);
+        },2500)
+      }
       addAudit(`Added a supplier.`, userInfo?.id);
       setIsLoaded(false);
     }
@@ -202,38 +220,40 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
                       value={formData.supplierName}
                       onChange={handleChange}
                       name='supplierName'
-                      className='input input-bordered w-full mb-4' 
+                      className='input input-bordered w-full' 
                       placeholder='Supplier Name' />
                       {/* if no supplier name */}
-                      {err?.supplierName && <p className='text-red-400 text-center'>{err.supplierName}</p>}
+                      {err?.supplierName && <p className='text-red-400 text-center mt-4'>{err.supplierName}</p>}
 
                   <input 
                       type="text" 
                       value={formData.storeName}
                       onChange={handleChange}
                       name='storeName'
-                      className='input input-bordered w-full mb-4' 
+                      className='input input-bordered w-full mt-4' 
                       placeholder='Supplier Shop Name' />
                       {/* if no store name */}
-                      {err?.storeName && <p className='text-red-400 text-center'>{err?.storeName}</p>}
+                      {err?.storeName && <p className='text-red-400 text-center mt-4'>{err?.storeName}</p>}
 
                   <textarea 
-                      className='textarea textarea-bordered w-full mb-2' 
+                      className='textarea textarea-bordered w-full mt-4' 
                       value={formData.description}
                       onChange={handleChange}
                       name='description'
                       placeholder='Description'>
                   </textarea>
                   {/* if no description */}
-                  {err?.description && <p className='text-red-400 text-center'>{err?.description}</p>}
+                  {err?.description && <p className='text-red-400 text-center mt-4'>{err?.description}</p>}
 
                   <input 
                       type="number" 
-                      className='input input-bordered w-full mb-4' 
+                      className='input input-bordered w-full mt-4' 
                       value={formData.contactNumber}
                       onChange={handleChange}
                       name='contactNumber'
                       placeholder='Contact Number' />
+                      {/* if no contact */}
+                      {err?.contactNumber && <p className='text-red-400 text-center mt-4'>{err?.contactNumber}</p>}
                   
                   <SupplyLists supplies={supplies} checkedItems={checkedItems} setCheckedItems={setCheckedItems}/>
                   {/* if no supply */}
@@ -271,18 +291,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
                       placeholder='Address' />
 
                       {/* if no address */}
-                      {err?.address && <p className='text-red-400 text-center'>{err.address}</p>}
-                      
-                  <input 
-                      type="text" 
-                      className='input input-bordered w-full mt-4 mb-2'  
-                      value={formData.address}
-                      onChange={handleChange}
-                      name='address'
-                      placeholder='Address' />
-
-                      {/* if no address */}
-                      {err?.address && <p className='text-red-400 text-center'>{err.address}</p>}
+                      {err?.address && <p className='text-red-400 text-center mt-2'>{err.address}</p>}
                       
                     <div className="mt-2">
                       <label>Upload Profile Image: </label>
@@ -290,7 +299,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
                     </div>
 
                     {/* if no image */}
-                    {err?.imageProfile && <p className='text-red-400 text-center'>{err.imageProfile}</p>}
+                    {err?.imageProfile && <p className='text-red-400 text-center mt-4'>{err.imageProfile}</p>}
 
                     <div className='mt-2'>
                       {previewProfile && 
@@ -308,7 +317,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
                     </div>
 
                     {/* if no image */}
-                    {err?.image && <p className='text-red-400 text-center'>{err.image}</p>}
+                    {err?.image && <p className='text-red-400 text-center mt-4'>{err.image}</p>}
 
                     <div className='mt-2'>
                       {preview && 
@@ -327,7 +336,7 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal }){
                 <button className="btn btn-default" onClick={closeModal}>
                   Close
                 </button>
-                <button className="btn btn-success text-white" onClick={handleSubmitSupplier}>
+                <button className="btn btn-success text-white" onClick={handleSubmitSupplier} disabled={isDisabled}>
                   Submit
                 </button>
               </div>

@@ -5,9 +5,6 @@ function Supplies({ details, setDetails, handleSubmit, handleImageChange, previe
     const handleButtonSubmit = () => {
         handleSubmit();
         setIsDisabled(true);
-        setTimeout(() => {
-            setIsDisabled(false);
-        }, 3000);
     }
 
     return (

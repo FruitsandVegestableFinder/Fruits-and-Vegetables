@@ -55,6 +55,10 @@ const useAuthStore = create((set) => ({
         set({ registerError: { password: "Password must be between 8 and 16 characters" }});
         return;
     }
+    if (contactNumber.length < 11) {
+        set({ registerError: { contactNumber: "Please enter a valid contact number" }});
+        return;
+    }
 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);

@@ -89,7 +89,7 @@ const Profile = () => {
                   className="input input-bordered w-full"
                   value={contactNumber}
                   onChange={(e) => {
-                    setContactNumber(e.target.value)
+                    setContactNumber(e.target.value.replace(/[^0-9+]/g, '').slice(0, 11))
                     setUpdateError();
                     setUpdateSuccess();
                   }}

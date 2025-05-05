@@ -150,6 +150,9 @@ function SupplierModal({ setIsLoaded, details, isOpen, closeModal, success, setS
     if(formData?.contactNumber == '' || formData?.contactNumber == null){
       setErr((prev) => ({ ...prev, contactNumber: 'Please enter contact number.' })); hasError = true;
     }
+    if(formData?.contactNumber.length < 11){
+      setErr((prev) => ({ ...prev, contactNumber: 'Please enter a valid contact number.' })); hasError = true;
+    }
     if(checkedItems.length <= 0){
       setErr((prev) => ({ ...prev, supplyLists: 'Please select atleast one (1) supply.' })); hasError = true;
     }

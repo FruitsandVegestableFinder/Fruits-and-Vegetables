@@ -143,6 +143,11 @@ const useAuthStore = create((set) => ({
         if(fullName == userData.fullName && contactNumber == userData.contactNumber && address == userData.address){
           return;
         }
+        
+        if (contactNumber.length < 11) {
+            set({ updateError: { other: "Please enter a valid contact number" }});
+            return;
+        }
 
         await updateDoc(userRef, {
           fullName,
